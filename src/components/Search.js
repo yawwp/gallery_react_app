@@ -1,18 +1,17 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState , useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 
-function Search(props) {
+function Search() {
   const [input,setInput] = useState('');
   const navigate = useNavigate();
+  const ref = useRef('');
 
   function handleSubmit(e){
     e.preventDefault();
-    props.getData(input);
-    navigate('/'+ input)
+    navigate('/'+input);
+    ref.current.valueOf='';
   }
-
-  
 
   return (
     <form className="search-form" 
@@ -24,6 +23,7 @@ function Search(props) {
           onChange={(e)=> {
             setInput(e.target.value)
             }} 
+          ref={ref}
           required
           />
         <button type="submit" className="search-button">

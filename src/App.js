@@ -15,40 +15,54 @@ import Nav from './components/Nav'
 import Error from './components/Error'
 
 function App() {
+    //Setting state for api search 
+    const [input, setInput] = useState(undefined);
+
+    //Array of data based on 'input' state
     const [data, setData] = useState(null);
-    const [input, setInput] = useState('Home');
-    
 
-    const api = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${config}&tags=${input}&format=json&nojsoncallback=1`;
-
-    useEffect(() => {
+    useEffect(()=> {
         const fetchPhotos = async () => {
-        try {
-            const res = await axios.get(api);
-            if (res && res.data) {
-                setData(res.data);
+            try{
+                const api = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${config}&tags=${input}&format=json&nojsoncallback=1`;
+                const res = await axios.get(api);
+                if (res && res.data) setData(res.data);
+            } catch (err) {
+                console.log(err);
             }
-
-        } catch (err) {
-            console.log(err)
-            }
-        }
+        };
         fetchPhotos();
-    },[input]); 
+    },[input])
 
     function getData(data){
         setInput(data);
     }
 
+    function clearData(){
+        setData();
+    }
+
+
     return (
         <div className='container'>
-            <Search getData={getData}/>
+            <Search/>
             <Nav getData={getData}/>
             
             <Routes>
-                <Route path='/' element={data ? <Photo data={data} input={input} /> : 'Loading.....' }/> 
-                <Route path='/:search' element={data ? <Photo data={data} input={input} /> : 'Loading.....' }/> 
-                <Route path='/:search/*' element={<Error/>} /> 
+                <Route path='/' 
+                    element={data ? <Photo 
+                        data={data} 
+                        getData={getData} 
+                        input={input} 
+                        /> : 'Loading.....' }/> 
+                    <Route path=':search' 
+                        element={data ? <Photo 
+                            data={data} 
+                            getData={getData} 
+                            input={input}
+                            clearData={clearData}
+                            />  : 'Searching.... '} />
+                        <Route path='*' element={<Error />}/>
             </Routes>
         </div>
 
